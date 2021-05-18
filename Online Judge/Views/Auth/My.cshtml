@@ -1,0 +1,267 @@
+﻿@model Online_Judge.Models.ViewModels.Auth.MyIndexModel
+
+
+<div class="row pl-5">
+    
+    <div class="card"  style="width:95%">
+        <div class="card-header">
+            <h3 class="card-title">@Model.User.UserName 个人信息</h3>
+
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
+                    <div class="row">
+                        <div class="col-12 col-sm-4">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">用户昵称</span>
+                                    <span class="info-box-number text-center text-muted mb-0">@Model.User.UserName</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">通过题目数量</span>
+                                    <span class="info-box-number text-center text-muted mb-0">@Model.User.TotalAccepted</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">总提交</span>
+                                    <span class="info-box-number text-center text-muted mb-0">@Model.User.TotalSubmit</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-8">
+                            <h4>已提交题目标签</h4>
+                            <div id="main" style="width: 600px;height:400px;"></div>
+                        </div>
+                        <div class="col-4">
+                            <h4>已提交题目</h4>
+                            @foreach (var item in Model.HaveSolvedProblem)
+                            {
+                                <a href="#" type="button" class="btn  btn-info btn-sm">@item</a>
+                            }
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="LineChart" style="width: 600px;height:400px;" ></div>
+                    </div>
+                    </div>
+                <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
+                    <h3 class="text-primary"><i class="fas fa-paint-brush"></i> 个人标签模块</h3>
+                    <p class="text-muted">可直接增加或者删除自己拥有的标签，这样会使推荐题目也相应发生改变 </p>
+                    <br>
+
+
+                    <h5 class="mt-5 text-muted">所拥有的标签</h5>
+                    @foreach (var item in Model.HaveLabel)
+                    {
+                        <a href="#" type="button" class="btn  btn-info btn-sm  delete" name="@item.Id" style="margin-bottom: 5px;">@item.Name    <i class="fas fa-times" style=" margin-left: 5px;"></i> </a>
+
+                    }
+                    <br>
+
+                    <h5 class="mt-5 text-muted">目前还没有标签</h5>
+                    @foreach (var item in Model.NotHaveLabel)
+                    {
+                        <a href="#" type="button" class="btn  btn-info btn-sm add" name="@item.Id"  style="margin-bottom: 5px;">@item.Name   <i class="fas fa-plus" style=" margin-left: 5px;"></i></a>
+                    }
+                    <br>
+                    <h5 class="mt-5 text-muted">个人信息</h5>
+                    <p class="text-muted">邮箱：@Model.User.Email</p>
+                    <p class="text-muted">昵称：@Model.User.UserName</p>
+                    <p class="text-muted">创建时间：@Model.User.CreateTime.Date</p>
+                    <p class="text-muted">上次登录时间：@Model.User.LastLoginTime.Date</p>
+                    <p class="text-muted">身份：管理员</p>
+                    <p class="text-muted">ac题目数量：@Model.User.TotalAccepted</p>
+                    <p class="text-muted">总提交数目：@Model.User.TotalSubmit</p>
+                </div>
+                </div>
+        </div>
+        <!-- /.card-body -->
+    </div>
+</div>
+@section Scripts {
+    <script src="~/js/echart.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script type="text/javascript">
+
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        var LineChart = echarts.init(document.getElementById('LineChart'));
+
+        $(() => {
+
+            var brower = [];
+            let option = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    top: '5%',
+                    left: 'center'
+                },
+                series: [
+                    {
+                        name: '已过题目标签',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '40',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                           
+                        ]
+                    }
+                ]
+            };
+
+            let lineoption = {
+                title: {
+                    text: '每月提交题目数量'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['一月', '二月', '三月', '四月', '五月']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: [0, 0, 0, 0, @Model.HaveSolvedProblem.Count],
+                    type: 'line'
+                }]
+            };
+            LineChart.setOption(lineoption);
+            $.ajax({
+                type: "post",
+                url: "/Auth/ChartData",
+                data: {
+               
+                },
+                success: function (res) {
+                    console.log(res);
+                    $.each(res, function (index, item) {
+                 
+                        brower.push({
+                            value: item,
+                            name: index
+                        });
+                    });
+
+                    option.series[0].data = brower;
+                    myChart.setOption(option);
+                }
+            });
+
+
+            // 删除标签
+
+            $(".delete").click(function () {
+
+                var _this = this;
+                swal({
+                    title: "你确定要删除吗?",
+                    text: "删除之后不再会推荐相关标签题目哦!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonClass: "btn-danger",
+                    buttons: {
+                        cancel: "取消删除",
+                        确认删除: true,
+                    },
+                }).then(function (isConfirm) {
+                    if (isConfirm) {
+                        $.ajax({
+                            type: "post",
+                            url: "/Auth/DeleteLabel",
+                            data: {
+                                labelId: $(_this).prop("name")
+                            },
+                            success: function (res) {
+                                window.location.reload();
+                               
+                            }
+
+                        })
+                    }
+                    else {
+
+                    }
+
+                })
+
+            })
+
+
+            //添加标签
+
+            $(".add").click(function () {
+
+                var _this = this;
+                swal({
+                    title: "你确定要添加嘛?",
+                    text: "添加之后会推荐相关标签题目哦!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonClass: "btn-danger",
+                    buttons: {
+                        cancel: "取消添加",
+                        确认添加: true,
+                    },
+                }).then(function (isConfirm) {
+                    if (isConfirm) {
+                        $.ajax({
+                            type: "post",
+                            url: "/Auth/AddLabel",
+                            data: {
+                                labelId: $(_this).prop("name")
+                            },
+                            success: function (res) {
+                                window.location.reload();
+
+                            }
+
+                        })
+                    }
+                    else {
+
+                    }
+
+                })
+
+            })
+
+           
+        });
+
+    </script>
+}

@@ -1,0 +1,57 @@
+﻿@model List<Online_Judge.Models.ViewModels.Problemset.RecordsModel>
+@{
+    ViewData["Title"] = "提交记录";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <ul class="nav nav-pills ml-auto p-2">
+                <li class="nav-item"><a class="nav-link mynav-link active" data-toggle="tab" href="../Records/Index?page=0">1</a></li>
+                <li class="nav-item"><a class="nav-link mynav-link" data-toggle="tab" href="../Records/Index?page=1"> 2</a></li>
+                <li class="nav-item"><a class="nav-link mynav-link" data-toggle="tab" href="../Records/Index?page=2"> 3</a></li>
+            </ul>
+            <div class="card-body">
+                <table class="table table-condensed table-head-fixed table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">题目 ID</th>
+                            <th scope="col">通过率</th>
+                            <th scope="col">语言</th>
+                            <th scope="col">状态</th>
+                            <th scope="col">提交者</th>
+                            <th scope="col">提交时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var upload in Model)
+                        {
+                            <tr>
+                                <td><a asp-controller="Judge" asp-action="Status" asp-route-id="@upload.Id">@upload.Id</a></td>
+                                <td><a asp-controller="Problemset" asp-action="Detail" asp-route-id="@upload.ProblemId">@upload.ProblemId</a></td>
+                                <td>@upload.GetPassRate()</td>
+                                <td>@upload.Language.ToString()</td>
+                                <td>@upload.Status.ToString()</td>
+                                <td><a asp-controller="Users" asp-action="Index" asp-route-id="@upload.AuthorId">@upload.Author</a></td>
+                                <td>@upload.CreateTime</td>
+                            </tr>
+                        }
+                        @for (int i = Model.Count() + 1; i < 20; i++)
+                        {
+                            <tr>
+                                <td>--</td>
+                                <td>--</td>
+                                <td>--</td>
+                                <td>--</td>
+                                <td>--</td>
+                                <td>--</td>
+                                <td>--</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

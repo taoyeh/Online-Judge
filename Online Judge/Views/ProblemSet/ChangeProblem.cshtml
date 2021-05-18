@@ -1,0 +1,167 @@
+﻿@model Online_Judge.Models.ViewModels.Problemset.IndexViewModel
+<div class="row">
+    <div class="col-md-9 pl-5">
+        <div class="card">
+            <ul class="nav nav-pills ml-auto p-2">
+                <li class="nav-item"><a class="nav-link mynav-link" data-toggle="tab" href="../ProblemSet/Index?page=0">1</a></li>
+                <li class="nav-item"><a class="nav-link mynav-link" data-toggle="tab" href="../ProblemSet/Index?page=1"> 2</a></li>
+                <li class="nav-item"><a class="nav-link mynav-link" data-toggle="tab" href="../ProblemSet/Index?page=2"> 3</a></li>
+            </ul>
+            <div class="card-body">
+                <table class="table table-condensed table-head-fixed table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">题目ID</th>
+                            <th scope="col">题目序号</th>
+                            <th scope="col">题目标题</th>
+                            <th scope="col">通过率</th>
+                            <th scope="col">分类</th>
+                            <th scope="col">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var problem in Model.ProblemModels)
+                        {
+                            <tr>
+                                <td>@problem.problem.Id </td>
+                                <td>@problem.problem.OrderNumber</td>
+                                <td><a asp-controller="Problemset" asp-action="Detail" asp-route-id="@problem.problem.Id">@problem.problem.Title</a></td>
+                                <td>@problem.problem.GetPassRate().ToUIString()</td>
+                                <td>
+
+                                    @foreach (var label in problem.labelProfiles)
+                                    {
+                                        <a href="#" type="button" class="btn  btn-info btn-sm">@label.Name</a>
+                                    }
+
+                                </td>
+                                <td>
+                                    <a type="button" class="btn  btn-info btn-sm" href="#"><i class="fas fa-pencil-alt"></i>修改</a>
+                                    <button type="button" class="btn  btn-danger btn-sm  delete" name="@problem.problem.Id"><i class="fas fa-trash"></i>删除 </button>
+                                </td>
+                            </tr>
+                        }
+                        @for (int i = Model.ProblemModels.Count() + 1 + Model.Page * 20; i < 20 + Model.Page * 20; i++)
+                        {
+                            <tr>
+                                <td>--</td>
+                                <td>--</td>
+                                <td>--</td>
+                                <td>--</td>
+                                <td>--</td>
+                                <td>--</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 pl-5">
+        <div class="row">
+            <form method="get" asp-action="Search">
+                <div class="card" style="width:300px">
+                    <div class="card-header">
+                        <h3 class="card-title">搜索</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <input name="content" type="text" class="form-control" placeholder="Content" />
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-search"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10px">前往</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="card" style="width:300px">
+                <div class="card-header">
+                    <h3 class="card-title">没有找到你想要的题目？</h3>
+                </div>
+                <div class="card-body">
+                    <a class="btn btn-primary btn-block" asp-controller="ProblemSet" asp-action="New">立即创建</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="card" style="width:300px">
+                <div class="card-header">
+                    <h3 class="card-title">所有标签</h3>
+                </div>
+                <div class="card-body">
+                    @foreach (var label in Model.AllLables)
+                    {
+                        <a href="#" type="button" class="btn  btn-primary   btn-sm">@label.Name</a>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="card" style="width:300px">
+                <div class="card-header">
+                    <h3 class="card-title">更多</h3>
+                </div>
+                <div class="card-body">
+                    <a class="btn btn-primary btn-block" asp-controller="Users" asp-action="ProblemsCreated">你创建的题目</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/sweetalert.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $(".mynav-link").removeClass("active");
+            $(".mynav-link:eq(@Model.Page)").addClass("active");
+            $(".mynav-link").click(function () {
+                $(".mynav-link").removeClass("active");
+                $(this).addClass("active");
+            });
+        });
+        $(".delete").click(function () {
+
+            var _this = this;
+            swal({
+                title: "你确定要删吗?",
+                text: "你可要考虑清除哦，可能需要拎包跑路哦!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                buttons: {
+                    cancel: "取消删除",
+                    确认删除: true,
+                },
+            }).then(function (isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        type: "post",
+                        url: "/ProblemSet/Delete",
+                        data: {
+                            ProblemId: $(_this).prop("name")
+                        },
+                        success: function (res) {
+                            window.location.reload();
+                        }
+
+                    })
+                }
+                else {
+
+                }
+
+            })
+
+        })
+
+    </script>
+}

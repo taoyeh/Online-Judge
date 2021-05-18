@@ -1,0 +1,32 @@
+﻿
+
+@model Online_Judge.Models.Label.LabelProfile
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="container">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" asp-action="Change" style="width: 100%">
+                        <h4>创建标签</h4>
+                        <div class="form-group">
+                            <label for="title">标题</label>
+
+                            <input  asp-for="Id"  value="@Model.Id"   style="display: none">
+                            <input class="form-control" id="title" asp-for="Name"  value="@Model.Name" />
+                        </div>
+                        <div class="form-group">
+                            <label for="description">描述</label>
+                            <div style="background-color: white">
+                                <textarea class="form-control" id="description" asp-for="Introduction" value="@Model.Introduction"></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">完成</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-1"></div>
+</div>
